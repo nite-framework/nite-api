@@ -1,11 +1,37 @@
 {
   "name": "nite-api",
   "version": "0.0.1",
-  "author": "",
+  "author": "codeBigInt",
+  "description": "A dynamic contract api wrapper for midnight compact smart contracts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nite-framework/nite-api.git"
+  },
+  "homepage": "https://github.com/nite-framework/nite-api#readme",
+  "bugs": {
+    "url": "https://github.com/nite-framework/nite-api/issues"
+  },
+  "keywords": [
+    "midnight",
+    "compact",
+    "smart-contracts",
+    "typescript",
+    "blockchain",
+    "rxjs"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "CONTRIBUTING.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "sideEffects": false,
   "license": "MIT",
   "exports": {
     "*": "./dist/index.js",
@@ -25,9 +51,7 @@
     "@midnight-ntwrk/midnight-js-contracts": "3.0.0",
     "@midnight-ntwrk/midnight-js-types": "3.0.0",
     "pino": "^10.1.0",
-    "rxjs": "^7.8.2",
-    "uuid": "^13.0.0",
-    "ws": "^8.18.3"
+    "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "@types/ws": "^8.18.1",
