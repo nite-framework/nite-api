@@ -79,17 +79,17 @@ import { utils } from "nite-api";
 const compiledContract = utils.createCompiledContract(
   "my-contract",
   MyContract,
-  witnesses,
+  witnesses, // Pass an empty object if no witness is used by you contract
   "./artifacts/my-contract"
 );
 ```
 
 ### Deploy a contract
-NB: The type for you `providers` should be constructed as follow `DynamicProviders<TContractType, typeof privateStateId>`
+NB: The type for your `providers` should be constructed as follow `DynamicProviders<TContractType, typeof yourPrivateStateId>`
 
 ```ts
   const providers = {
-      
+
   }
 ```
 
@@ -97,7 +97,7 @@ NB: The type for you `providers` should be constructed as follow `DynamicProvide
 ```ts
 import { DynamicContractAPI } from "nite-api";
 
-const api = await DynamicContractAPI.deploy<TContractType>({
+const api = await DynamicContractAPI.deploy<TContractType, typeof yourPrivateStateId>({
   providers,
   compiledContract,
   privateStateId,
@@ -112,7 +112,7 @@ console.log(api.deployedContractAddress);
 If your contract does not require private state during deployment:
 
 ```ts
-const api = await DynamicContractAPI.deploy<TContractType>({
+const api = await DynamicContractAPI.deploy<TContractType, typeof yourPrivateStateId>({
   providers,
   compiledContract,
   args: [],
@@ -122,7 +122,7 @@ const api = await DynamicContractAPI.deploy<TContractType>({
 ### Join an existing deployment
 
 ```ts
-const api = await DynamicContractAPI.join<TContractType>({
+const api = await DynamicContractAPI.join<TContractType, typeof yourPrivateStateId>({
   providers,
   compiledContract,
   contractAddress: "0x...",
@@ -134,12 +134,12 @@ const api = await DynamicContractAPI.join<TContractType>({
 
 ### Call a transaction circuit
 
-`callTx` forwards to the underlying Midnight `deployedContract.callTx` map.
+`callTx` forwards to the underlying Midnight `deployedContract.callTx` map. It also automatically detects a union of all callable contract circuit names and their arguments, to be passed sequentially.
 
 ```ts
-await api.callTx("increment" as any, 1n);
-await api.callTx("transfer" as any, recipient, amount);
-await api.callTx("ping" as any);
+await api.callTx("increment", 1n);
+await api.callTx("transfer", recipient, amount);
+await api.callTx("ping");
 ```
 
 The exact arguments depend on the generated circuit function types from your Midnight contract bindings.
@@ -156,8 +156,11 @@ If a circuit takes no parameters, call it with just the circuit name.
 Example:
 
 ```ts
+import ledger from "/path to your compiled contract";
 const subscription = api.contractState.subscribe(([publicState, privateState]) => {
-  console.log("public", publicState);
+  console.log("public", publicState); 
+  /* Format contract state using ledger() generated as artifact for compiled contract */
+  const ledgerState = ledger(publicState.data);
   console.log("private", privateState);
 });
 
