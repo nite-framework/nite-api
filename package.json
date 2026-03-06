@@ -37,7 +37,7 @@
     "*": "./dist/index.js",
     "require": "./dist/index.js",
     "default": "./dist/index.js",
-    "types": "./dist/index.ts"
+    "types": "./dist/index.d.ts"
   },
   "scripts": {
     "test": "vitest run",

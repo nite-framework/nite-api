@@ -20,6 +20,8 @@ type TxCallMap<C extends Contract.Any> = FoundContract<C>["callTx"];
 type TxCircuitName<C extends Contract.Any> = Extract<keyof TxCallMap<C>, string>;
 type TxCircuitFn<C extends Contract.Any, K extends TxCircuitName<C>> =
   TxCallMap<C>[K] extends (...args: infer A) => infer R ? (...args: A) => R : never;
+type TxCircuitArgs<C extends Contract.Any, K extends TxCircuitName<C>> = Parameters<TxCircuitFn<C, K>>;
+type TxCircuitReturn<C extends Contract.Any, K extends TxCircuitName<C>> = ReturnType<TxCircuitFn<C, K>>;
 
 
 type DeployOptions<C extends Contract.Any, PSID extends PrivateStateId> = {
@@ -72,14 +74,14 @@ export class DynamicContractAPI<C extends Contract.Any, PSID extends PrivateStat
 
   callTx<K extends TxCircuitName<C>>(
     circuitName: K,
-    ...args: Parameters<TxCircuitFn<C, K>>
-  ): ReturnType<TxCircuitFn<C, K>> {
+    ...args: TxCircuitArgs<C, K>
+  ): TxCircuitReturn<C, K> {
     const circuit = this.deployedContract.callTx[circuitName] as TxCircuitFn<C, K> | undefined;
     if (typeof circuit !== "function") {
       throw new Error(`Unknown callTx circuit: ${String(circuitName)}`);
     }
 
-    return circuit(...args) as ReturnType<TxCircuitFn<C, K>>;
+    return circuit(...args) as TxCircuitReturn<C, K>;
   }
 
   static async deploy<C extends Contract.Any, PSID extends PrivateStateId = PrivateStateId>(

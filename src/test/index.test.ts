@@ -41,6 +41,7 @@ describe("DynamicContractAPI", () => {
         },
         callTx: {
             increment: vi.fn((amount: number) => ({ ok: true, amount })),
+            ping: vi.fn(() => ({ ok: true })),
         },
     } as any;
 
@@ -128,6 +129,19 @@ describe("DynamicContractAPI", () => {
         expect(() => callTx("missing")).toThrow(
             "Unknown callTx circuit: missing"
         );
+    });
+
+    it("callTx() supports circuits without arguments", async () => {
+        const api = await DynamicContractAPI.deploy({
+            providers,
+            compiledContract,
+        });
+
+        const callTx = api.callTx.bind(api) as (circuitName: string, ...args: any[]) => unknown;
+        const result = callTx("ping");
+
+        expect(foundContract.callTx.ping).toHaveBeenCalledWith();
+        expect(result).toEqual({ ok: true });
     });
 
     it("contractState emits public and private state together", async () => {
