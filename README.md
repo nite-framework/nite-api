@@ -85,11 +85,19 @@ const compiledContract = utils.createCompiledContract(
 ```
 
 ### Deploy a contract
+NB: The type for you `providers` should be constructed as follow `DynamicProviders<TContractType, typeof privateStateId>`
+
+```ts
+  const providers = {
+      
+  }
+```
+
 
 ```ts
 import { DynamicContractAPI } from "nite-api";
 
-const api = await DynamicContractAPI.deploy({
+const api = await DynamicContractAPI.deploy<TContractType>({
   providers,
   compiledContract,
   privateStateId,
@@ -104,7 +112,7 @@ console.log(api.deployedContractAddress);
 If your contract does not require private state during deployment:
 
 ```ts
-const api = await DynamicContractAPI.deploy({
+const api = await DynamicContractAPI.deploy<TContractType>({
   providers,
   compiledContract,
   args: [],
@@ -114,7 +122,7 @@ const api = await DynamicContractAPI.deploy({
 ### Join an existing deployment
 
 ```ts
-const api = await DynamicContractAPI.join({
+const api = await DynamicContractAPI.join<TContractType>({
   providers,
   compiledContract,
   contractAddress: "0x...",
@@ -129,11 +137,13 @@ const api = await DynamicContractAPI.join({
 `callTx` forwards to the underlying Midnight `deployedContract.callTx` map.
 
 ```ts
-await api.callTx("increment" as any, txContext, 1n);
-await api.callTx("transfer" as any, txContext, recipient, amount);
+await api.callTx("increment" as any, 1n);
+await api.callTx("transfer" as any, recipient, amount);
+await api.callTx("ping" as any);
 ```
 
 The exact arguments depend on the generated circuit function types from your Midnight contract bindings.
+If a circuit takes no parameters, call it with just the circuit name.
 
 ### Observe contract state
 
@@ -192,6 +202,7 @@ Behavior:
 
 - throws if `circuitName` is not found
 - forwards all arguments to the underlying circuit function
+- allows zero arguments for circuits that do not accept parameters
 
 ### `api.contractState`
 
@@ -245,8 +256,15 @@ Recommended publish flow:
 ```bash
 npm test
 npm run build
+npm version patch
 npm publish
 ```
+
+Notes:
+
+- `npm version patch` requires a clean git working tree
+- use `npm version minor` or `npm version major` when appropriate
+- if you need to bump the version without creating a git tag or commit, use `npm version patch --no-git-tag-version`
 
 ## Notes
 

@@ -1,9 +1,12 @@
 import { type CompiledContract, type Contract } from "@midnight-ntwrk/compact-js";
 import { type ContractState } from "@midnight-ntwrk/compact-runtime";
 import {
+  type CallResult,
+  type FinalizedCallTxData,
   deployContract,
   findDeployedContract,
   type FoundContract,
+  type TransactionContext,
 } from "@midnight-ntwrk/midnight-js-contracts";
 import { type MidnightProviders, type PrivateStateId } from "@midnight-ntwrk/midnight-js-types";
 import { type Logger } from "pino";
@@ -18,11 +21,6 @@ export type DynamicProviders<C extends Contract.Any, PSID extends PrivateStateId
 
 type TxCallMap<C extends Contract.Any> = FoundContract<C>["callTx"];
 type TxCircuitName<C extends Contract.Any> = Extract<keyof TxCallMap<C>, string>;
-type TxCircuitFn<C extends Contract.Any, K extends TxCircuitName<C>> =
-  TxCallMap<C>[K] extends (...args: infer A) => infer R ? (...args: A) => R : never;
-type TxCircuitArgs<C extends Contract.Any, K extends TxCircuitName<C>> = Parameters<TxCircuitFn<C, K>>;
-type TxCircuitReturn<C extends Contract.Any, K extends TxCircuitName<C>> = ReturnType<TxCircuitFn<C, K>>;
-
 
 type DeployOptions<C extends Contract.Any, PSID extends PrivateStateId> = {
   readonly providers: DynamicProviders<C, PSID>;
@@ -74,14 +72,23 @@ export class DynamicContractAPI<C extends Contract.Any, PSID extends PrivateStat
 
   callTx<K extends TxCircuitName<C>>(
     circuitName: K,
-    ...args: TxCircuitArgs<C, K>
-  ): TxCircuitReturn<C, K> {
-    const circuit = this.deployedContract.callTx[circuitName] as TxCircuitFn<C, K> | undefined;
+    ...args: Contract.CircuitParameters<C, K>
+  ): Promise<FinalizedCallTxData<C, K>>;
+  callTx<K extends TxCircuitName<C>>(
+    circuitName: K,
+    txCtx: TransactionContext<C, K>,
+    ...args: Contract.CircuitParameters<C, K>
+  ): Promise<CallResult<C, K>>;
+  callTx<K extends TxCircuitName<C>>(
+    circuitName: K,
+    ...args: [TransactionContext<C, K>, ...Contract.CircuitParameters<C, K>] | Contract.CircuitParameters<C, K>
+  ): Promise<FinalizedCallTxData<C, K>> | Promise<CallResult<C, K>> {
+    const circuit = this.deployedContract.callTx[circuitName] as TxCallMap<C>[K] | undefined;
     if (typeof circuit !== "function") {
       throw new Error(`Unknown callTx circuit: ${String(circuitName)}`);
     }
 
-    return circuit(...args) as TxCircuitReturn<C, K>;
+    return circuit(...args as never);
   }
 
   static async deploy<C extends Contract.Any, PSID extends PrivateStateId = PrivateStateId>(
