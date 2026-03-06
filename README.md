@@ -84,6 +84,8 @@ const compiledContract = utils.createCompiledContract(
 NB: The type for your `providers` should be constructed as follow `DynamicProviders<TContractType, typeof yourPrivateStateId>`
 
 ```ts
+import { DynamicProviders } from 'nite-api';
+
 const walletAndMidnightProvider = await createWalletAndMidnightProvider(walletCtx);
 const zkConfigProvider = new NodeZkConfigProvider<TCircuitId>("./path to your compiled artifact");
 
