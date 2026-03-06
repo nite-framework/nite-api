@@ -74,7 +74,7 @@ import { utils } from 'nite-api';
 const compiledContract = utils.createCompiledContract(
   'my-contract',
   MyContract,
-  witnesses, // Pass an empty object if no witness is used by you contract
+  witnesses, // Pass an empty object if no witness is used by your contract
   './artifacts/my-contract',
 );
 ```
@@ -84,10 +84,10 @@ const compiledContract = utils.createCompiledContract(
 NB: The type for your `providers` should be constructed as follow `DynamicProviders<TContractType, typeof yourPrivateStateId>`
 
 ```ts
-const walletAndMidnightProvider = await createWalletAndMidnightProvider(awlletCtx);
+const walletAndMidnightProvider = await createWalletAndMidnightProvider(walletCtx);
 const zkConfigProvider = new NodeZkConfigProvider<TCircuitId>("./path to your compiled artifact");
 
-const providers = {
+const providers: DynamicProviders<TContractType, typeof yourPrivateStateId> = {
   privateStateProvider: levelPrivateStateProvider<typeof yourPrivateStateId>({
     privateStateStoreName: contractConfig.privateStateStoreName,
     walletProvider: walletAndMidnightProvider,
@@ -131,7 +131,7 @@ const api = await DynamicContractAPI.deploy<TContractType, typeof yourPrivateSta
 const api = await DynamicContractAPI.join<TContractType, typeof yourPrivateStateId>({
   providers,
   compiledContract,
-  contractAddress: '0x...',
+  contractAddress: '...',
   privateStateId,
   initialPrivateState,
   logger,
@@ -146,6 +146,7 @@ const api = await DynamicContractAPI.join<TContractType, typeof yourPrivateState
 await api.callTx('increment', 1n);
 await api.callTx('transfer', recipient, amount);
 await api.callTx('ping');
+await api.callTx('ping', txContext, user); //Allowed to pass a transaction context
 ```
 
 The exact arguments depend on the generated circuit function types from your Midnight contract bindings.
