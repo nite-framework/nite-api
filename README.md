@@ -48,14 +48,9 @@ Helper for creating a `CompiledContract` from:
 ## Quick Start
 
 ```ts
-import { DynamicContractAPI, utils } from "nite-api";
+import { DynamicContractAPI, utils } from 'nite-api';
 
-const compiledContract = utils.createCompiledContract(
-  "counter",
-  CounterContract,
-  witnesses,
-  "./artifacts/counter"
-);
+const compiledContract = utils.createCompiledContract('counter', CounterContract, witnesses, './artifacts/counter');
 
 const api = await DynamicContractAPI.deploy({
   providers,
@@ -66,7 +61,7 @@ const api = await DynamicContractAPI.deploy({
   logger,
 });
 
-await api.callTx("increment" as any, txContext, 1n);
+await api.callTx('increment' as any, txContext, 1n);
 ```
 
 ## Usage
@@ -74,28 +69,39 @@ await api.callTx("increment" as any, txContext, 1n);
 ### Create a compiled contract
 
 ```ts
-import { utils } from "nite-api";
+import { utils } from 'nite-api';
 
 const compiledContract = utils.createCompiledContract(
-  "my-contract",
+  'my-contract',
   MyContract,
   witnesses, // Pass an empty object if no witness is used by you contract
-  "./artifacts/my-contract"
+  './artifacts/my-contract',
 );
 ```
 
 ### Deploy a contract
+
 NB: The type for your `providers` should be constructed as follow `DynamicProviders<TContractType, typeof yourPrivateStateId>`
 
 ```ts
-  const providers = {
+const walletAndMidnightProvider = await createWalletAndMidnightProvider(awlletCtx);
+const zkConfigProvider = new NodeZkConfigProvider<TCircuitId>("./path to your compiled artifact");
 
-  }
+const providers = {
+  privateStateProvider: levelPrivateStateProvider<typeof yourPrivateStateId>({
+    privateStateStoreName: contractConfig.privateStateStoreName,
+    walletProvider: walletAndMidnightProvider,
+  }),
+  publicDataProvider: indexerPublicDataProvider(config.indexer, config.indexerWS),
+  zkConfigProvider,
+  proofProvider: httpClientProofProvider(config.proofServer, zkConfigProvider),
+  walletProvider: walletAndMidnightProvider,
+  midnightProvider: walletAndMidnightProvider,
+};
 ```
 
-
 ```ts
-import { DynamicContractAPI } from "nite-api";
+import { DynamicContractAPI } from 'nite-api';
 
 const api = await DynamicContractAPI.deploy<TContractType, typeof yourPrivateStateId>({
   providers,
@@ -125,7 +131,7 @@ const api = await DynamicContractAPI.deploy<TContractType, typeof yourPrivateSta
 const api = await DynamicContractAPI.join<TContractType, typeof yourPrivateStateId>({
   providers,
   compiledContract,
-  contractAddress: "0x...",
+  contractAddress: '0x...',
   privateStateId,
   initialPrivateState,
   logger,
@@ -137,9 +143,9 @@ const api = await DynamicContractAPI.join<TContractType, typeof yourPrivateState
 `callTx` forwards to the underlying Midnight `deployedContract.callTx` map. It also automatically detects a union of all callable contract circuit names and their arguments, to be passed sequentially.
 
 ```ts
-await api.callTx("increment", 1n);
-await api.callTx("transfer", recipient, amount);
-await api.callTx("ping");
+await api.callTx('increment', 1n);
+await api.callTx('transfer', recipient, amount);
+await api.callTx('ping');
 ```
 
 The exact arguments depend on the generated circuit function types from your Midnight contract bindings.
@@ -150,18 +156,18 @@ If a circuit takes no parameters, call it with just the circuit name.
 `contractState` is an RxJS observable that emits:
 
 ```ts
-[publicContractState, privateStateOrNull]
+[publicContractState, privateStateOrNull];
 ```
 
 Example:
 
 ```ts
-import ledger from "/path to your compiled contract";
+import ledger from '/path to your compiled contract';
 const subscription = api.contractState.subscribe(([publicState, privateState]) => {
-  console.log("public", publicState); 
+  console.log('public', publicState);
   /* Format contract state using ledger() generated as artifact for compiled contract */
   const ledgerState = ledger(publicState.data);
-  console.log("private", privateState);
+  console.log('private', privateState);
 });
 
 subscription.unsubscribe();
@@ -216,7 +222,7 @@ Behavior:
 - subscribes to public contract state updates
 - resolves private state once when `privateStateId` is present
 - emits `null` for private state when no `privateStateId` is provided
-- shaped/formated using the `ledger()` provided in compiled contract artifact 
+- shaped/formated using the `ledger()` provided in compiled contract artifact
 
 ## Development
 
@@ -278,4 +284,5 @@ Notes:
 ## License
 
 MIT
+
 # nite-api
