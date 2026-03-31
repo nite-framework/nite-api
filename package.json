@@ -1,6 +1,6 @@
 {
   "name": "nite-api",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "author": "codeBigInt",
   "description": "A dynamic contract api wrapper for midnight compact smart contracts",
   "repository": {
