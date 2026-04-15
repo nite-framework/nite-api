@@ -7,7 +7,7 @@ import {
   findDeployedContract,
   type FoundContract,
   type TransactionContext,
-} from "@midnight-ntwrk/midnight-js-contracts";
+} from "@midnight-ntwrk/midnight-js/contracts";
 import { type MidnightProviders, type PrivateStateId } from "@midnight-ntwrk/midnight-js-types";
 import { type Logger } from "pino";
 import { combineLatest, concat, from, map, type Observable, tap } from "rxjs";

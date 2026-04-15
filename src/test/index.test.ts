@@ -5,7 +5,7 @@ const { deployContractMock, findDeployedContractMock } = vi.hoisted(() => ({
     deployContractMock: vi.fn(),
     findDeployedContractMock: vi.fn(),
 }));
-vi.mock("@midnight-ntwrk/midnight-js-contracts", () => ({
+vi.mock("@midnight-ntwrk/midnight-js/contracts", () => ({
     deployContract: deployContractMock,
     findDeployedContract: findDeployedContractMock,
 }));
