@@ -49,8 +49,8 @@
   "dependencies": {
     "@midnight-ntwrk/compact-runtime": "^0.15.0",
     "@midnight-ntwrk/compact-js": "^2.5.0",
-    "@midnight-ntwrk/midnight-js-contracts": "^4.0.0",
-    "@midnight-ntwrk/midnight-js-types": "^4.0.0",
+    "@midnight-ntwrk/midnight-js-contracts": "^4.0.4",
+    "@midnight-ntwrk/midnight-js-types": "^4.0.4",
     "pino": "^10.1.0",
     "rxjs": "^7.8.2"
   },
