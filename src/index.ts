@@ -14,7 +14,7 @@ import { combineLatest, concat, from, map, type Observable, tap } from "rxjs";
 
 
 export type DynamicProviders<C extends Contract.Any, PSID extends PrivateStateId> = MidnightProviders<
-  Contract.ImpureCircuitId<C>,
+  Contract.ProvableCircuitId<C>,
   PSID,
   Contract.PrivateState<C>
 >;
