@@ -52,7 +52,7 @@
     "@midnight-ntwrk/midnight-js-contracts": "^4.1.1",
     "@midnight-ntwrk/midnight-js-types": "^4.1.1",
     "@midnight-ntwrk/midnight-js-utils": "^4.1.1",
-    "@midnight-ntwrk/wallet-sdk-address-format": "^3.1.2",
+    "@midnightntwrk/wallet-sdk-address-format": "^3.1.2",
     "pino": "^10.1.0",
     "rxjs": "^7.8.2"
   },
