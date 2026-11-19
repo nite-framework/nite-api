@@ -23,10 +23,10 @@ describe("DynamicContractAPI", () => {
 
     const providers = {
         publicDataProvider: {
-            contractStateObservable: vi.fn(() => of(publicState)),
+            contractStateObservable: vi.fn(() => of({ value: { contractState: { deserialize: () => publicState } } })),
         },
         privateStateProvider: {
-            get: vi.fn(async () => privateState),
+            forContract: vi.fn(() => ({ get: vi.fn(async () => privateState) })),
         },
     } as any;
 
@@ -158,7 +158,7 @@ describe("DynamicContractAPI", () => {
             "addr_123",
             { type: "all" }
         );
-        expect(providers.privateStateProvider.get).toHaveBeenCalledWith("ps_1");
+        expect(providers.privateStateProvider.forContract).toHaveBeenCalledWith("addr_123");
         expect(state).toEqual([publicState, privateState]);
         expect(logger.trace).toHaveBeenCalledWith({ contractState: publicState });
     });
@@ -171,7 +171,7 @@ describe("DynamicContractAPI", () => {
 
         const state = await firstValueFrom(api.contractState);
 
-        expect(providers.privateStateProvider.get).not.toHaveBeenCalled();
+        expect(providers.privateStateProvider.forContract).not.toHaveBeenCalled();
         expect(state).toEqual([publicState, null]);
     });
 });
